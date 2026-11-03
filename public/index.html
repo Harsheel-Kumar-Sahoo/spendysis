@@ -113,19 +113,17 @@ label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:12p
 .statmsg{text-align:center;color:var(--muted);padding:30px 10px}
 .err{color:var(--danger);font-size:13px;min-height:18px;margin-top:8px}
 </style>
+<link rel="stylesheet" href="/menu.css?v=1">
 </head>
 <body>
 <div class="app">
   <div class="top">
-    <div class="lg"><div class="mark"><i></i><i></i><i></i></div><div><div class="brand">Spendysis</div><button class="out" id="logout">Sign out</button></div></div>
-    <div class="months"><button id="prev" aria-label="Previous month">‹</button><span id="mlabel"></span><button id="next" aria-label="Next month">›</button></div>
+    <div class="lg"><div class="mark"><i></i><i></i><i></i></div><div class="brand">Spendysis</div></div>
+    <div class="rg"><div class="months"><button id="prev" aria-label="Previous month">‹</button><span id="mlabel"></span><button id="next" aria-label="Next month">›</button></div>
+    <button class="ib" id="menu-btn" type="button" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>
+    </div>
   </div>
   <div class="tabs" role="tablist"><button class="tab" id="tab-home" role="tab" aria-selected="true">Expenses</button><button class="tab" id="tab-stats" role="tab" aria-selected="false">Statistics</button></div>
-  <div class="tools">
-    <button class="tool" id="install" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Install app</span></button>
-    <button class="tool" id="export" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg><span>Export PDF report</span></button>
-    <button class="tool" id="theme" type="button"></button>
-  </div>
   <div id="v-home">
   <section class="hero">
     <small>Spent this month</small>
@@ -154,6 +152,20 @@ label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:12p
 </div>
 <button class="fab" id="add">+ Add expense</button>
 
+<div class="menu-bg" id="menu-bg"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="dh"><b>Menu</b><button class="ib" id="menu-x" type="button" aria-label="Close menu"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <button class="mrow prof" id="m-profile" type="button"><span class="av" id="m-av">?</span><span class="ml"><b id="m-name">Your account</b><small id="m-mail"></small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
+  <div class="mgroup">
+    <button class="mrow" id="m-limit" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg><span class="ml">Daily spending limit<small id="m-lim-sub">Off</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <button class="mrow" id="export" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg><span class="ml">Export PDF report<small>This month or all time</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <button class="mrow" id="theme" type="button"></button>
+    <button class="mrow" id="install" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="ml">Install app<small>Add to your home screen</small></span></button>
+  </div>
+  <div class="msep"></div>
+  <button class="mrow danger" id="logout" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span class="ml">Sign out</span></button>
+  <div class="dfoot">Spendysis · Spend + Analysis</div>
+</aside>
 <div class="sheet-bg" id="help"><div class="sheet" role="dialog" aria-label="Install Spendysis">
   <h2>Install Spendysis</h2>
   <div id="h-list"></div>
@@ -205,6 +217,7 @@ Food:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 2v7c0 1.1.9 2 2 2h
 Travel:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2Z"/></svg>',
 Clothes:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23Z"/></svg>',
 Other:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.42l8.7 8.7a2.43 2.43 0 0 0 3.42 0l6.58-6.58a2.43 2.43 0 0 0 0-3.42Z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>'},CCOL={Food:'#F2994A',Travel:'#2D9CDB',Clothes:'#BB6BD9',Other:'#7A8794'};
+var MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],hooks={};
 var cat='Food',view='home',charts={},chartLib=null;
 var KEY='kharcha-v1',items=[],filter='All',mode='UPI';
 var now=new Date(),month=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
@@ -214,6 +227,7 @@ var TOKEN=null,signup=false,user={name:'',email:''},deferredInstall=null;try{TOK
 function api(path,opt){opt=opt||{};opt.headers={'Content-Type':'application/json'};if(TOKEN)opt.headers.Authorization='Bearer '+TOKEN;
   return fetch('/api'+path,opt).then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(!r.ok){if(r.status===401&&TOKEN)logout();throw new Error(d.error||'Something went wrong')}return d})})}
 function norm(x){x.id=x._id;return x}
+function dayTotal(){var t=today();return items.reduce(function(s,i){return i.date===t?s+i.amt:s},0)}
 function load(){return api('/expenses').then(function(d){items=d.map(norm);render()})}
 function logout(){TOKEN=null;try{localStorage.removeItem('spendysis-token')}catch(e){}items=[];user={name:'',email:''};render();$('auth').classList.add('open')}
 
@@ -222,7 +236,7 @@ function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()
 function shift(n){var p=month.split('-'),d=new Date(+p[0],+p[1]-1+n,1);month=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');render()}
 function render(){
   var p=month.split('-');
-  $('mlabel').textContent=new Date(+p[0],+p[1]-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  $('mlabel').textContent=MN[+p[1]-1]+' '+p[0];
   var inM=items.filter(function(i){return i.date.slice(0,7)===month});
   var sums={UPI:0,Cash:0,Card:0,Other:0},total=0;
   inM.forEach(function(i){sums[i.mode]+=i.amt;total+=i.amt});
@@ -276,8 +290,8 @@ $('save').onclick=function(){
   if(!date){$('err').textContent='Pick a date.';return}
   var rec={amt:Math.round(amt*100)/100,mode:mode,other:mode==='Other'?other:'',cat:cat,what:what,date:date};
   var old=editId?items.filter(function(i){return String(i.id)===editId})[0]:null;
-  var eid=old?old.id:null;
-  $('save').disabled=true;api(eid?'/expenses/'+eid:'/expenses',{method:eid?'PUT':'POST',body:JSON.stringify(rec)}).then(function(d){norm(d);if(eid)items[items.indexOf(old)]=d;else items.push(d);editId=null;month=date.slice(0,7);closeSheet();render()}).catch(function(e){$('err').textContent=e.message}).then(function(){$('save').disabled=false});
+  var eid=old?old.id:null,before=dayTotal();
+  $('save').disabled=true;api(eid?'/expenses/'+eid:'/expenses',{method:eid?'PUT':'POST',body:JSON.stringify(rec)}).then(function(d){norm(d);if(eid)items[items.indexOf(old)]=d;else items.push(d);editId=null;month=date.slice(0,7);closeSheet();render();if(hooks.saved)hooks.saved(before)}).catch(function(e){$('err').textContent=e.message}).then(function(){$('save').disabled=false});
 };
 
 /* ---------- Statistics ---------- */
@@ -287,7 +301,7 @@ function setView(v){view=v;
   $('tab-home').setAttribute('aria-selected',v==='home');$('tab-stats').setAttribute('aria-selected',v==='stats');
   if(v==='stats')renderStats()}
 $('tab-home').onclick=function(){setView('home')};$('tab-stats').onclick=function(){setView('stats')};
-var _render=render;render=function(){_render();if(view==='stats')renderStats()};
+var _render=render;render=function(){_render();if(view==='stats')renderStats();if(hooks.render)hooks.render()};
 function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
 function inr(n){return fmt.format(n)}
 function ensureChart(){if(window.Chart)return Promise.resolve();if(!chartLib)chartLib=loadScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js').catch(function(e){chartLib=null;throw new Error('Could not load charts. Check your internet connection.')});return chartLib}
@@ -306,7 +320,7 @@ function renderStats(){
   $('kpis').innerHTML=[['Total spent',inr(total)],['Daily average',inr(total/days)],['Top category','<i class="ci">'+CICO[top]+'</i>'+top],['Biggest day',new Date(+p[0],+p[1]-1,+maxD).toLocaleDateString('en-IN',{day:'numeric',month:'short'})+' · '+inr(byDay[maxD])]]
     .map(function(k){return '<div class="kpi"><small>'+k[0]+'</small><b>'+k[1]+'</b></div>'}).join('');
   // last 6 months
-  var ms=[],lab=[];for(var k=5;k>=0;k--){var d=new Date(+p[0],+p[1]-1-k,1);ms.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));lab.push(d.toLocaleDateString('en-IN',{month:'short'}))}
+  var ms=[],lab=[];for(var k=5;k>=0;k--){var d=new Date(+p[0],+p[1]-1-k,1);ms.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));lab.push(MN[d.getMonth()])}
   var series=CATS.map(function(c){return{label:c,backgroundColor:CCOL[c],borderRadius:4,data:ms.map(function(m){return items.reduce(function(s,i){return s+(i.date.slice(0,7)===m&&(CATS.indexOf(i.cat)>-1?i.cat:'Other')===c?i.amt:0)},0)})}});
   var dl=[],dv=[],cum=[],run=0;for(var d=1;d<=dim;d++){dl.push(d);dv.push(byDay[d]||0);if(!isCur||d<=t.getDate()){run+=byDay[d]||0;cum.push(run)}}
   ensureChart().then(function(){
@@ -371,7 +385,7 @@ function curTheme(){var t=document.documentElement.getAttribute('data-theme');re
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('spendysis-theme',t)}catch(e){}
   var dark=t==='dark'||(t==='auto'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
   var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',dark?'#0E151B':'#F3F7F9');
-  $('theme').innerHTML=IC[t]+'<span>'+TL[t]+'</span>';$('theme').setAttribute('aria-label','Theme: '+TL[t]+'. Tap to change');if(typeof renderStats==='function'&&view==='stats')renderStats()}
+  $('theme').innerHTML=IC[t]+'<span class="ml">Theme<small>'+TL[t]+' · tap to change</small></span>';$('theme').setAttribute('aria-label','Theme: '+TL[t]+'. Tap to change');if(typeof renderStats==='function'&&view==='stats')renderStats()}
 $('theme').onclick=function(){applyTheme(THEMES[(THEMES.indexOf(curTheme())+1)%3])};
 try{window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){if(curTheme()==='auto')applyTheme('auto')})}catch(e){}
 applyTheme(curTheme());
@@ -379,10 +393,12 @@ $('logout').onclick=logout;
 $('a-sw').onclick=function(){signup=!signup;$('a-namew').hidden=!signup;$('a-title').textContent=signup?'Create your account':'Sign in to Spendysis';$('a-go').textContent=signup?'Create account':'Sign in';$('a-sw').textContent=signup?'Already have an account? Sign in':'New here? Create an account';$('a-err').textContent=''};
 $('a-go').onclick=function(){var p={email:$('a-email').value.trim(),password:$('a-pass').value};if(signup)p.name=$('a-name').value.trim();$('a-err').textContent='';$('a-go').disabled=true;
   api('/auth/'+(signup?'register':'login'),{method:'POST',body:JSON.stringify(p)}).then(function(d){user=d.user||user;TOKEN=d.token;try{localStorage.setItem('spendysis-token',TOKEN)}catch(e){}$('a-pass').value='';$('auth').classList.remove('open');return load()}).catch(function(e){$('a-err').textContent=e.message}).then(function(){$('a-go').disabled=false})};
+window.SP={api:api,fmt:fmt,hooks:hooks,today:today,getItems:function(){return items},getUser:function(){return user},setUser:function(u){user=u}};
 render();
 if(TOKEN){api('/auth/me').then(function(u){user=u;$('auth').classList.remove('open');return load()}).catch(function(){$('auth').classList.add('open')})}
 })();
 </script>
+<script src="/menu.js?v=1"></script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});</script>
 </body>
 </html>
