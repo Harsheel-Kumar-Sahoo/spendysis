@@ -14,8 +14,19 @@ const CATS = ['Food', 'Travel', 'Clothes', 'Other'];
 const User = mongoose.model('User', new mongoose.Schema({
   name: { type: String, trim: true, maxlength: 40 },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-  passwordHash: { type: String, required: true }
+  passwordHash: { type: String, required: true },
+  limit: {
+    on: { type: Boolean, default: false },
+    amt: { type: Number, default: 0, min: 0, max: 100000000 }
+  }
 }, { timestamps: true }));
+
+const userOut = u => ({
+  name: u.name,
+  email: u.email,
+  createdAt: u.createdAt,
+  limit: { on: !!(u.limit && u.limit.on), amt: (u.limit && u.limit.amt) || 0 }
+});
 
 const Expense = mongoose.model('Expense', new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },
@@ -66,20 +77,49 @@ app.post('/api/auth/register', authLimit, wrap(async (req, res) => {
   if (!/^\S+@\S+\.\S+$/.test(email)) return res.status(400).json({ error: 'Enter a valid email.' });
   if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters.' });
   const u = await User.create({ name: name.trim() || email.split('@')[0], email, passwordHash: await bcrypt.hash(password, 12) });
-  res.json({ token: sign(u), user: { name: u.name, email: u.email } });
+  res.json({ token: sign(u), user: userOut(u) });
 }));
 
 app.post('/api/auth/login', authLimit, wrap(async (req, res) => {
   const u = await User.findOne({ email: String(req.body.email || '').toLowerCase().trim() });
   const ok = u && await bcrypt.compare(String(req.body.password || ''), u.passwordHash);
   if (!ok) return res.status(401).json({ error: 'Incorrect email or password.' });
-  res.json({ token: sign(u), user: { name: u.name, email: u.email } });
+  res.json({ token: sign(u), user: userOut(u) });
 }));
 
 app.get('/api/auth/me', auth, wrap(async (req, res) => {
   const u = await User.findById(req.uid);
   if (!u) return res.status(401).json({ error: 'Please sign in again.' });
-  res.json({ name: u.name, email: u.email });
+  res.json(userOut(u));
+}));
+
+app.put('/api/auth/me', auth, wrap(async (req, res) => {
+  const name = String(req.body.name || '').trim();
+  if (!name || name.length > 40) return res.status(400).json({ error: 'Name must be 1 to 40 characters.' });
+  const u = await User.findByIdAndUpdate(req.uid, { name }, { new: true });
+  if (!u) return res.status(401).json({ error: 'Please sign in again.' });
+  res.json(userOut(u));
+}));
+
+app.put('/api/auth/password', authLimit, auth, wrap(async (req, res) => {
+  const current = String(req.body.current || ''), next = String(req.body.next || '');
+  if (next.length < 8) return res.status(400).json({ error: 'New password must be at least 8 characters.' });
+  const u = await User.findById(req.uid);
+  if (!u) return res.status(401).json({ error: 'Please sign in again.' });
+  // 400 (not 401) so a wrong current password does not sign the user out
+  if (!(await bcrypt.compare(current, u.passwordHash))) return res.status(400).json({ error: 'Current password is incorrect.' });
+  u.passwordHash = await bcrypt.hash(next, 12);
+  await u.save();
+  res.json({ ok: true });
+}));
+
+app.put('/api/auth/limit', auth, wrap(async (req, res) => {
+  const on = !!req.body.on, amt = Number(req.body.amt) || 0;
+  if (amt < 0 || amt > 100000000) return res.status(400).json({ error: 'Enter a valid limit.' });
+  if (on && !(amt > 0)) return res.status(400).json({ error: 'Enter a limit greater than 0.' });
+  const u = await User.findByIdAndUpdate(req.uid, { limit: { on, amt } }, { new: true });
+  if (!u) return res.status(401).json({ error: 'Please sign in again.' });
+  res.json(userOut(u));
 }));
 
 app.get('/api/expenses', auth, wrap(async (req, res) => res.json(await Expense.find({ userId: req.uid }).sort({ date: -1, _id: -1 }).lean())));
