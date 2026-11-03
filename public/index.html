@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -13,11 +13,12 @@
 <meta name="apple-mobile-web-app-title" content="Spendora">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('spendora-theme')||'light')}catch(e){}</script>
 <style>
-:root{--bg:#EEF2F5;--surface:#fff;--ink:#14212B;--muted:#667684;--line:#DCE3E9;--accent:#0B6E66;--accent-ink:#fff;--upi:#6D5BD0;--cash:#1F9D6B;--card:#E08A00;--other:#7A8794;--danger:#C0392B;
+:root{--bg:#F3F7F9;--surface:#fff;--ink:#14212B;--muted:#667684;--line:#E3E9EE;--accent:#0B6E66;--accent-ink:#fff;--hero:linear-gradient(135deg,#0B6E66,#12968A);--upi:#6D5BD0;--cash:#1F9D6B;--card:#E08A00;--other:#7A8794;--danger:#C0392B;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E151B;--surface:#18222B;--ink:#E8EEF2;--muted:#8FA0AD;--line:#27343F;--accent:#3CC9BC;--accent-ink:#06211E;--upi:#9C8CFF;--cash:#4FD39B;--card:#F5A83A;--other:#9AA8B4;--danger:#FF7A6B;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0E151B;--surface:#18222B;--ink:#E8EEF2;--muted:#8FA0AD;--line:#27343F;--accent:#3CC9BC;--accent-ink:#06211E;--upi:#9C8CFF;--cash:#4FD39B;--card:#F5A83A;--other:#9AA8B4;--danger:#FF7A6B;color-scheme:dark}
+:root[data-theme="dark"]{--bg:#0E151B;--surface:#18222B;--ink:#E8EEF2;--muted:#8FA0AD;--line:#27343F;--accent:#3CC9BC;--accent-ink:#06211E;--hero:linear-gradient(135deg,#0B5E58,#12806F);--upi:#9C8CFF;--cash:#4FD39B;--card:#F5A83A;--other:#9AA8B4;--danger:#FF7A6B;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root[data-theme="auto"]{--bg:#0E151B;--surface:#18222B;--ink:#E8EEF2;--muted:#8FA0AD;--line:#27343F;--accent:#3CC9BC;--accent-ink:#06211E;--hero:linear-gradient(135deg,#0B5E58,#12806F);--upi:#9C8CFF;--cash:#4FD39B;--card:#F5A83A;--other:#9AA8B4;--danger:#FF7A6B;color-scheme:dark}}
 *{box-sizing:border-box}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
@@ -28,8 +29,8 @@ button,input,select{font:inherit;color:inherit}
 .months{display:flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
 .months button{border:0;background:none;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:18px;color:var(--ink)}
 .months button:hover{background:var(--bg)}
-.months span{min-width:110px;text-align:center;font-weight:600}
-.hero{background:var(--accent);color:var(--accent-ink);border-radius:22px;padding:22px 20px 20px}
+.months span{min-width:96px;text-align:center;font-weight:600}
+.hero{background:var(--hero);color:#fff;border-radius:22px;padding:22px 20px 20px}
 .hero small{opacity:.8;font-weight:500}
 .total{font-size:42px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin:4px 0 16px;font-variant-numeric:tabular-nums}
 .bar{display:flex;height:12px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.25)}
@@ -41,7 +42,7 @@ button,input,select{font:inherit;color:inherit}
 .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
 .chips{display:flex;gap:8px;overflow-x:auto;margin:18px 0 10px;padding-bottom:2px}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;cursor:pointer;white-space:nowrap;font-weight:600;font-size:14px}
-.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .day{font-size:13px;color:var(--muted);font-weight:600;margin:16px 4px 6px}
 .item{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:8px}
 .badge{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:11px;color:#fff;flex:none}
@@ -71,6 +72,10 @@ label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:12p
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .save{width:100%;margin-top:18px;border:0;background:var(--accent);color:var(--accent-ink);padding:14px;border-radius:14px;font-weight:700;font-size:16px;cursor:pointer}
 .out{border:0;background:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;display:block}
+.lg{display:flex;align-items:center;gap:10px}
+.mark{width:36px;height:36px;border-radius:10px;background:var(--hero);display:flex;align-items:flex-end;justify-content:center;gap:3px;padding:8px 0;flex:none}
+.mark i{display:block;width:5px;border-radius:2px;background:#fff}
+.mark i:nth-child(1){height:8px}.mark i:nth-child(2){height:13px}.mark i:nth-child(3){height:20px}
 .tools{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap}
 .tool{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-weight:600;font-size:13px;cursor:pointer}
 .tool:hover{border-color:var(--accent);color:var(--accent)}
@@ -87,12 +92,13 @@ label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:12p
 <body>
 <div class="app">
   <div class="top">
-    <div><div class="brand">Spendora</div><button class="out" id="logout">Sign out</button></div>
+    <div class="lg"><div class="mark"><i></i><i></i><i></i></div><div><div class="brand">Spendora</div><button class="out" id="logout">Sign out</button></div></div>
     <div class="months"><button id="prev" aria-label="Previous month">‹</button><span id="mlabel"></span><button id="next" aria-label="Next month">›</button></div>
   </div>
   <div class="tools">
     <button class="tool" id="install" type="button">⬇ Install app</button>
     <button class="tool" id="export" type="button">📄 Export PDF report</button>
+    <button class="tool" id="theme" type="button"></button>
   </div>
   <section class="hero">
     <small>Spent this month</small>
@@ -245,6 +251,15 @@ $('x-all').onclick=function(){runExport('all')};
 $('x-close').onclick=function(){$('exp').classList.remove('open')};
 $('exp').onclick=function(e){if(e.target===$('exp'))$('exp').classList.remove('open')};
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){$('help').classList.remove('open');$('exp').classList.remove('open')}});
+var THEMES=['light','dark','auto'],TL={light:'☀️ Light',dark:'🌙 Dark',auto:'🌓 Auto'};
+function curTheme(){var t=document.documentElement.getAttribute('data-theme');return THEMES.indexOf(t)>-1?t:'light'}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('spendora-theme',t)}catch(e){}
+  var dark=t==='dark'||(t==='auto'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+  var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',dark?'#0E151B':'#F3F7F9');
+  $('theme').textContent=TL[t]}
+$('theme').onclick=function(){applyTheme(THEMES[(THEMES.indexOf(curTheme())+1)%3])};
+try{window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){if(curTheme()==='auto')applyTheme('auto')})}catch(e){}
+applyTheme(curTheme());
 $('logout').onclick=logout;
 $('a-sw').onclick=function(){signup=!signup;$('a-namew').hidden=!signup;$('a-title').textContent=signup?'Create your account':'Sign in to Spendora';$('a-go').textContent=signup?'Create account':'Sign in';$('a-sw').textContent=signup?'Already have an account? Sign in':'New here? Create an account';$('a-err').textContent=''};
 $('a-go').onclick=function(){var p={email:$('a-email').value.trim(),password:$('a-pass').value};if(signup)p.name=$('a-name').value.trim();$('a-err').textContent='';$('a-go').disabled=true;
