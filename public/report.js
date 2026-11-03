@@ -87,10 +87,10 @@
     var label = scope === 'month' ? period : 'All time';
     var chunks = []; for (var k = 0; k < list.length; k += ROWS) chunks.push(list.slice(k, k + ROWS));
     var total = 1 + chunks.length, gen = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
-    var ft = function (n) { return '<div class="ft"><span>Spendora · Expense report</span><span>Page ' + n + ' of ' + total + '</span></div>'; };
+    var ft = function (n) { return '<div class="ft"><span>Spendysis · Expense report</span><span>Page ' + n + ' of ' + total + '</span></div>'; };
     var nm = (user.name || user.email || '?').trim();
 
-    var sum = '<div class="rp"><div class="hd"><div class="lg">' + mk() + '<div><div class="bn">Spendora</div><div class="sub">Expense report</div></div></div>' +
+    var sum = '<div class="rp"><div class="hd"><div class="lg">' + mk() + '<div><div class="bn">Spendysis</div><div class="sub">Expense report</div></div></div>' +
       '<div class="per">' + (scope === 'month' ? 'Month' : 'Period') + '<b>' + esc(period) + '</b></div></div><div class="bd">' +
       '<div class="acct"><div class="av">' + esc(nm.charAt(0).toUpperCase()) + '</div><div class="w"><b>' + esc(user.name || '—') + '</b><span>' + esc(user.email || '') + '</span></div>' +
       '<div class="meta">Generated on<br><b>' + gen + '</b></div></div>';
@@ -150,10 +150,10 @@
         });
       }
       return next().then(function () {
-        var name = o.scope === 'month' ? 'Spendora-Report-' + o.month + '.pdf' : 'Spendora-Report-All-Time.pdf';
+        var name = o.scope === 'month' ? 'Spendysis-Report-' + o.month + '.pdf' : 'Spendysis-Report-All-Time.pdf';
         pdf.save(name); root.remove(); return name;
       }).catch(function (e) { root.remove(); throw e; });
     });
   }
-  window.SpendoraReport = { generate: generate, _build: build, _css: CSS };
+  window.SpendysisReport = { generate: generate, _build: build, _css: CSS };
 })();

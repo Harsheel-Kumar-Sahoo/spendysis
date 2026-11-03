@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Spendora",
-  "short_name": "Spendora",
+  "name": "Spendysis",
+  "short_name": "Spendysis",
   "description": "Track your monthly expenses by UPI, cash, card and more.",
   "start_url": "/",
   "scope": "/",
