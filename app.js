@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 
 const { MONGODB_URI, JWT_SECRET, PORT = 3000 } = process.env;
 if (!MONGODB_URI || !JWT_SECRET) throw new Error('Set MONGODB_URI and JWT_SECRET environment variables');
@@ -26,6 +27,8 @@ const Expense = mongoose.model('Expense', new mongoose.Schema({
 const app = express();
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '10kb' }));
+// Locally this serves the page; on Vercel the public/ folder is served by its CDN.
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Serverless-friendly cached MongoDB connection (reused between requests)
 const cache = global._spendoraMongo || (global._spendoraMongo = { conn: null, p: null });
@@ -87,4 +90,8 @@ app.delete('/api/expenses/:id', auth, wrap(async (req, res) => {
   r.deletedCount ? res.json({ ok: true }) : res.status(404).json({ error: 'Expense not found.' });
 }));
 
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => console.log('Spendora running on port ' + port));
+}
 module.exports = app;

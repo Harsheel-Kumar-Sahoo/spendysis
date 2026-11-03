@@ -13,6 +13,6 @@ Push to GitHub → Render "New Web Service" → build `npm install`, start `npm 
 → add env vars `MONGODB_URI` and `JWT_SECRET`. In Atlas > Network Access, allow `0.0.0.0/0`.
 
 ## Vercel + PWA
-- `api/index.js` + `vercel.json` run the Express app as a Vercel serverless function; `public/` is served as static files.
+- Vercel auto-detects `app.js` as the Express app; `public/` is served as static files. No vercel.json needed.
 - Env vars on Vercel: `MONGODB_URI`, `JWT_SECRET`. Atlas Network Access must allow `0.0.0.0/0`.
 - Installable PWA: `public/manifest.webmanifest`, `public/sw.js`, icons. Needs HTTPS (Vercel provides it).
