@@ -71,6 +71,16 @@ label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:12p
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .save{width:100%;margin-top:18px;border:0;background:var(--accent);color:var(--accent-ink);padding:14px;border-radius:14px;font-weight:700;font-size:16px;cursor:pointer}
 .out{border:0;background:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;display:block}
+.tools{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap}
+.tool{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-weight:600;font-size:13px;cursor:pointer}
+.tool:hover{border-color:var(--accent);color:var(--accent)}
+.tool[hidden]{display:none}
+.how{background:var(--bg);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.how.me{outline:2px solid var(--accent)}
+.how b{display:block;margin-bottom:2px}.how span{color:var(--muted);font-size:14px}.how em{font-style:normal;color:var(--ink);font-weight:600}
+.note{color:var(--muted);font-size:13px;margin:4px 0 0}
+.ghost{width:100%;margin-top:10px;border:1px solid var(--line);background:var(--bg);padding:13px;border-radius:14px;font-weight:700;cursor:pointer}
+.ghost:disabled,.save:disabled{opacity:.55;cursor:default}
 .err{color:var(--danger);font-size:13px;min-height:18px;margin-top:8px}
 </style>
 </head>
@@ -79,6 +89,10 @@ label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:12p
   <div class="top">
     <div><div class="brand">Spendora</div><button class="out" id="logout">Sign out</button></div>
     <div class="months"><button id="prev" aria-label="Previous month">‹</button><span id="mlabel"></span><button id="next" aria-label="Next month">›</button></div>
+  </div>
+  <div class="tools">
+    <button class="tool" id="install" type="button">⬇ Install app</button>
+    <button class="tool" id="export" type="button">📄 Export PDF report</button>
   </div>
   <section class="hero">
     <small>Spent this month</small>
@@ -91,6 +105,20 @@ label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:12p
 </div>
 <button class="fab" id="add">+ Add expense</button>
 
+<div class="sheet-bg" id="help"><div class="sheet" role="dialog" aria-label="Install Spendora">
+  <h2>Install Spendora</h2>
+  <div id="h-list"></div>
+  <p class="note">Open this site in Chrome (Android) or Safari (iPhone) to see these options.</p>
+  <button class="save" id="h-ok">Got it</button>
+</div></div>
+<div class="sheet-bg" id="exp"><div class="sheet" role="dialog" aria-label="Export PDF report">
+  <h2>Export PDF report</h2>
+  <p class="note" style="margin:0 0 14px">A designed report with your name and email, spending statistics, payment-method split, trends and every transaction. Your password is never included.</p>
+  <button class="save" id="x-month" style="margin-top:6px">This month</button>
+  <button class="ghost" id="x-all">All time</button>
+  <div class="err" id="x-msg" style="margin-top:12px"></div>
+  <button class="ghost" id="x-close">Close</button>
+</div></div>
 <div class="sheet-bg open" id="auth"><div class="sheet" role="dialog" aria-label="Sign in">
   <h2 id="a-title">Sign in to Spendora</h2>
   <div id="a-namew" hidden><label for="a-name">Your name</label><input class="in" id="a-name" maxlength="40" autocomplete="name"></div>
@@ -124,12 +152,12 @@ var KEY='kharcha-v1',items=[],filter='All',mode='UPI';
 var now=new Date(),month=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
 var $=function(id){return document.getElementById(id)};var editId=null,pendDel=null,pendT;
 var fmt=new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2,minimumFractionDigits:0});
-var TOKEN=null,signup=false;try{TOKEN=localStorage.getItem('spendora-token')}catch(e){}
+var TOKEN=null,signup=false,user={name:'',email:''},deferredInstall=null;try{TOKEN=localStorage.getItem('spendora-token')}catch(e){}
 function api(path,opt){opt=opt||{};opt.headers={'Content-Type':'application/json'};if(TOKEN)opt.headers.Authorization='Bearer '+TOKEN;
   return fetch('/api'+path,opt).then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(!r.ok){if(r.status===401&&TOKEN)logout();throw new Error(d.error||'Something went wrong')}return d})})}
 function norm(x){x.id=x._id;return x}
 function load(){return api('/expenses').then(function(d){items=d.map(norm);render()})}
-function logout(){TOKEN=null;try{localStorage.removeItem('spendora-token')}catch(e){}items=[];render();$('auth').classList.add('open')}
+function logout(){TOKEN=null;try{localStorage.removeItem('spendora-token')}catch(e){}items=[];user={name:'',email:''};render();$('auth').classList.add('open')}
 
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -185,12 +213,44 @@ $('save').onclick=function(){
   var eid=old?old.id:null;
   $('save').disabled=true;api(eid?'/expenses/'+eid:'/expenses',{method:eid?'PUT':'POST',body:JSON.stringify(rec)}).then(function(d){norm(d);if(eid)items[items.indexOf(old)]=d;else items.push(d);editId=null;month=date.slice(0,7);closeSheet();render()}).catch(function(e){$('err').textContent=e.message}).then(function(){$('save').disabled=false});
 };
+function isStandalone(){return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true}
+function refreshInstall(){$('install').hidden=isStandalone()}
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredInstall=e});
+window.addEventListener('appinstalled',function(){deferredInstall=null;refreshInstall()});
+$('install').onclick=function(){
+  if(deferredInstall){var pr=deferredInstall;deferredInstall=null;pr.prompt();pr.userChoice.then(refreshInstall);return}
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent),and=/android/i.test(navigator.userAgent);
+  var a='<div class="how'+(and?' me':'')+'"><b>Android (Chrome)</b><span>Tap the menu (⋮), then choose <em>Install app</em>.</span></div>';
+  var i='<div class="how'+(ios?' me':'')+'"><b>iPhone (Safari)</b><span>Tap <em>Share</em>, then choose <em>Add to Home Screen</em>.</span></div>';
+  $('h-list').innerHTML=ios?i+a:a+i;$('help').classList.add('open')};
+$('h-ok').onclick=function(){$('help').classList.remove('open')};
+$('help').onclick=function(e){if(e.target===$('help'))$('help').classList.remove('open')};
+refreshInstall();
+function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error('Could not load the PDF tools. Check your internet connection.'))};document.head.appendChild(s)})}
+function ensureLibs(){var t=[];
+  if(!window.html2canvas)t.push(loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'));
+  if(!window.jspdf)t.push(loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'));
+  if(!window.SpendoraReport)t.push(loadScript('/report.js'));
+  return Promise.all(t)}
+function openExport(){var p=month.split('-');$('x-month').textContent='This month ('+new Date(+p[0],+p[1]-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'})+')';$('x-msg').textContent='';$('exp').classList.add('open')}
+function runExport(scope){
+  var btns=[$('x-month'),$('x-all')];btns.forEach(function(b){b.disabled=true});$('x-msg').style.color='var(--muted)';$('x-msg').textContent='Creating your report…';
+  ensureLibs().then(function(){return window.SpendoraReport.generate({items:items,user:user,month:month,scope:scope})})
+    .then(function(n){$('x-msg').textContent='Saved as '+n+' ✓'})
+    .catch(function(e){$('x-msg').style.color='var(--danger)';$('x-msg').textContent=e.message||'Could not create the report.'})
+    .then(function(){btns.forEach(function(b){b.disabled=false})})}
+$('export').onclick=openExport;
+$('x-month').onclick=function(){runExport('month')};
+$('x-all').onclick=function(){runExport('all')};
+$('x-close').onclick=function(){$('exp').classList.remove('open')};
+$('exp').onclick=function(e){if(e.target===$('exp'))$('exp').classList.remove('open')};
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){$('help').classList.remove('open');$('exp').classList.remove('open')}});
 $('logout').onclick=logout;
 $('a-sw').onclick=function(){signup=!signup;$('a-namew').hidden=!signup;$('a-title').textContent=signup?'Create your account':'Sign in to Spendora';$('a-go').textContent=signup?'Create account':'Sign in';$('a-sw').textContent=signup?'Already have an account? Sign in':'New here? Create an account';$('a-err').textContent=''};
 $('a-go').onclick=function(){var p={email:$('a-email').value.trim(),password:$('a-pass').value};if(signup)p.name=$('a-name').value.trim();$('a-err').textContent='';$('a-go').disabled=true;
-  api('/auth/'+(signup?'register':'login'),{method:'POST',body:JSON.stringify(p)}).then(function(d){TOKEN=d.token;try{localStorage.setItem('spendora-token',TOKEN)}catch(e){}$('a-pass').value='';$('auth').classList.remove('open');return load()}).catch(function(e){$('a-err').textContent=e.message}).then(function(){$('a-go').disabled=false})};
+  api('/auth/'+(signup?'register':'login'),{method:'POST',body:JSON.stringify(p)}).then(function(d){user=d.user||user;TOKEN=d.token;try{localStorage.setItem('spendora-token',TOKEN)}catch(e){}$('a-pass').value='';$('auth').classList.remove('open');return load()}).catch(function(e){$('a-err').textContent=e.message}).then(function(){$('a-go').disabled=false})};
 render();
-if(TOKEN){api('/auth/me').then(function(){$('auth').classList.remove('open');return load()}).catch(function(){$('auth').classList.add('open')})}
+if(TOKEN){api('/auth/me').then(function(u){user=u;$('auth').classList.remove('open');return load()}).catch(function(){$('auth').classList.add('open')})}
 })();
 </script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});</script>
