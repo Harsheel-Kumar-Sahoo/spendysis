@@ -29,13 +29,12 @@ Spendysis helps you see where your money goes each month. Log every expense with
 
 ## Screenshots
 
-<!-- Add your screenshots to docs/screenshots/ and uncomment these lines.
 <p align="center">
   <img src="docs/screenshots/home-light.png" width="260" alt="Home, light theme">
   <img src="docs/screenshots/home-dark.png" width="260" alt="Home, dark theme">
   <img src="docs/screenshots/pdf-report.png" width="260" alt="PDF report">
 </p>
--->
+
 
 ## Tech stack
 
