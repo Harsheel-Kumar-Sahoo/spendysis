@@ -9,6 +9,8 @@ const path = require('path');
 const { MONGODB_URI, JWT_SECRET, PORT = 3000 } = process.env;
 if (!MONGODB_URI || !JWT_SECRET) throw new Error('Set MONGODB_URI and JWT_SECRET environment variables');
 
+const CATS = ['Food', 'Travel', 'Clothes', 'Other'];
+
 const User = mongoose.model('User', new mongoose.Schema({
   name: { type: String, trim: true, maxlength: 40 },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
@@ -20,6 +22,7 @@ const Expense = mongoose.model('Expense', new mongoose.Schema({
   amt: { type: Number, required: true, min: 0.01 },
   mode: { type: String, required: true, enum: ['UPI', 'Cash', 'Card', 'Other'] },
   other: { type: String, default: '', maxlength: 30, trim: true },
+  cat: { type: String, enum: CATS, default: 'Other' },
   what: { type: String, required: true, maxlength: 60, trim: true },
   date: { type: String, required: true, match: /^\d{4}-\d{2}-\d{2}$/ }
 }, { timestamps: true }));
@@ -54,7 +57,7 @@ const auth = (req, res, next) => {
   try { req.uid = jwt.verify(t, JWT_SECRET).uid; next(); }
   catch { res.status(401).json({ error: 'Please sign in again.' }); }
 };
-const pick = b => ({ amt: Number(b.amt), mode: b.mode, other: b.mode === 'Other' ? String(b.other || '') : '', what: String(b.what || ''), date: String(b.date || '') });
+const pick = b => ({ amt: Number(b.amt), mode: b.mode, other: b.mode === 'Other' ? String(b.other || '') : '', cat: CATS.includes(b.cat) ? b.cat : 'Other', what: String(b.what || ''), date: String(b.date || '') });
 
 const authLimit = rateLimit({ windowMs: 15 * 60 * 1000, max: 30, standardHeaders: true, legacyHeaders: false, message: { error: 'Too many attempts. Try again later.' } });
 
