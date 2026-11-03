@@ -14,7 +14,7 @@
 
 Spendysis helps you see where your money goes each month. Log every expense with how you paid (UPI, cash, card or any other method), then view clear totals, a payment-method split and a downloadable PDF report. It works as an installable app on Android, iPhone and desktop.
 
-**Live app:** `<add-your-vercel-link-here>`
+**Live app:** https://spendysis.vercel.app
 
 ## Features
 
