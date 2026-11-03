@@ -1,7 +1,15 @@
 {
   "name": "spendysis",
   "version": "1.0.0",
+  "description": "Spendysis (Spend + Analysis): an expense tracker PWA with accounts, payment-method tracking and PDF reports.",
   "private": true,
+  "license": "MIT",
+  "author": "Harsheel Kumar Sahoo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Harsheel-Kumar-Sahoo/spendysis.git"
+  },
+  "keywords": ["expense-tracker", "pwa", "express", "mongodb", "personal-finance", "upi"],
   "scripts": {
     "start": "node app.js",
     "dev": "node --watch app.js"
