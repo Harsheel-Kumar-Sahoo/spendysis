@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spendora – Monthly Expense Tracker</title>
+<meta name="theme-color" content="#0B6E66">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Spendora">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF2F5;--surface:#fff;--ink:#14212B;--muted:#667684;--line:#DCE3E9;--accent:#0B6E66;--accent-ink:#fff;--upi:#6D5BD0;--cash:#1F9D6B;--card:#E08A00;--other:#7A8794;--danger:#C0392B;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E151B;--surface:#18222B;--ink:#E8EEF2;--muted:#8FA0AD;--line:#27343F;--accent:#3CC9BC;--accent-ink:#06211E;--upi:#9C8CFF;--cash:#4FD39B;--card:#F5A83A;--other:#9AA8B4;--danger:#FF7A6B;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E151B;--surface:#18222B;--ink:#E8EEF2;--muted:#8FA0AD;--line:#27343F;--accent:#3CC9BC;--accent-ink:#06211E;--upi:#9C8CFF;--cash:#4FD39B;--card:#F5A83A;--other:#9AA8B4;--danger:#FF7A6B;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+.app{max-width:560px;margin:0 auto;padding:16px 16px 110px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.brand{font-weight:800;font-size:20px;letter-spacing:-.02em}
+.months{display:flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+.months button{border:0;background:none;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:18px;color:var(--ink)}
+.months button:hover{background:var(--bg)}
+.months span{min-width:110px;text-align:center;font-weight:600}
+.hero{background:var(--accent);color:var(--accent-ink);border-radius:22px;padding:22px 20px 20px}
+.hero small{opacity:.8;font-weight:500}
+.total{font-size:42px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin:4px 0 16px;font-variant-numeric:tabular-nums}
+.bar{display:flex;height:12px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.25)}
+.bar i{display:block;height:100%;transition:width .4s}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.split div{background:var(--surface);color:var(--ink);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column}
+.split b{font-variant-numeric:tabular-nums;font-size:16px}
+.split span{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:18px 0 10px;padding-bottom:2px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;cursor:pointer;white-space:nowrap;font-weight:600;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.day{font-size:13px;color:var(--muted);font-weight:600;margin:16px 4px 6px}
+.item{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:8px}
+.badge{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:11px;color:#fff;flex:none}
+.item .t{flex:1;min-width:0}
+.item .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .t span{font-size:13px;color:var(--muted)}
+.amt{font-weight:700;font-variant-numeric:tabular-nums}
+.del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px 6px;border-radius:8px}
+.del:hover{color:var(--danger)}
+.del[data-edit]:hover{color:var(--accent)}
+.del.sure{color:#fff;background:var(--danger);font-size:13px;font-weight:700;padding:5px 10px}
+.empty{text-align:center;color:var(--muted);padding:36px 10px}
+.fab{position:fixed;right:max(18px,calc(50% - 280px + 18px));bottom:calc(20px + env(safe-area-inset-bottom,0px));border:0;background:var(--accent);color:var(--accent-ink);font-weight:700;border-radius:999px;padding:15px 22px;font-size:16px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.sheet-bg.open{display:flex}
+.sheet{background:var(--surface);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}.bar i{transition:none}}
+.sheet h2{margin:0 0 14px;font-size:18px}
+label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:12px 0 5px}
+.in{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.in:focus,.chip:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.amtin{font-size:28px;font-weight:700}
+.modes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mode{border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 0;cursor:pointer;font-weight:600}
+.mode[aria-pressed="true"]{color:#fff;border-color:transparent}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.save{width:100%;margin-top:18px;border:0;background:var(--accent);color:var(--accent-ink);padding:14px;border-radius:14px;font-weight:700;font-size:16px;cursor:pointer}
+.out{border:0;background:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;display:block}
+.err{color:var(--danger);font-size:13px;min-height:18px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div><div class="brand">Spendora</div><button class="out" id="logout">Sign out</button></div>
+    <div class="months"><button id="prev" aria-label="Previous month">‹</button><span id="mlabel"></span><button id="next" aria-label="Next month">›</button></div>
+  </div>
+  <section class="hero">
+    <small>Spent this month</small>
+    <div class="total" id="total">₹0</div>
+    <div class="bar" id="bar"></div>
+  </section>
+  <div class="split" id="split"></div>
+  <div class="chips" id="chips"></div>
+  <div id="list"></div>
+</div>
+<button class="fab" id="add">+ Add expense</button>
+
+<div class="sheet-bg open" id="auth"><div class="sheet" role="dialog" aria-label="Sign in">
+  <h2 id="a-title">Sign in to Spendora</h2>
+  <div id="a-namew" hidden><label for="a-name">Your name</label><input class="in" id="a-name" maxlength="40" autocomplete="name"></div>
+  <label for="a-email">Email</label><input class="in" id="a-email" type="email" autocomplete="email">
+  <label for="a-pass">Password (8+ characters)</label><input class="in" id="a-pass" type="password" autocomplete="current-password">
+  <div class="err" id="a-err"></div>
+  <button class="save" id="a-go">Sign in</button>
+  <button class="out" id="a-sw" style="margin:14px auto 0;font-size:14px">New here? Create an account</button>
+</div></div>
+<div class="sheet-bg" id="bg">
+  <div class="sheet" role="dialog" aria-label="Add expense">
+    <h2 id="sheet-title">Add expense</h2>
+    <label for="f-amt">Amount (₹)</label>
+    <input class="in amtin" id="f-amt" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0">
+    <label>Paid through</label>
+    <div class="modes" id="f-modes"></div>
+    <div id="other-wrap" hidden><label for="f-other">Which payment method?</label><input class="in" id="f-other" type="text" maxlength="30" placeholder="e.g. Net banking, Cheque, Wallet"></div>
+    <label for="f-what">What did you spend on?</label>
+    <input class="in" id="f-what" type="text" maxlength="60" placeholder="e.g. Lunch with friends">
+    <label for="f-date">Date</label>
+    <input class="in" id="f-date" type="date">
+    <div class="err" id="err"></div>
+    <button class="save" id="save">Save expense</button>
+  </div>
+</div>
+
+<script>
+(function(){
+var MODES=['UPI','Cash','Card','Other'],COL={UPI:'var(--upi)',Cash:'var(--cash)',Card:'var(--card)',Other:'var(--other)'};
+var KEY='kharcha-v1',items=[],filter='All',mode='UPI';
+var now=new Date(),month=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+var $=function(id){return document.getElementById(id)};var editId=null,pendDel=null,pendT;
+var fmt=new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2,minimumFractionDigits:0});
+var TOKEN=null,signup=false;try{TOKEN=localStorage.getItem('spendora-token')}catch(e){}
+function api(path,opt){opt=opt||{};opt.headers={'Content-Type':'application/json'};if(TOKEN)opt.headers.Authorization='Bearer '+TOKEN;
+  return fetch('/api'+path,opt).then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(!r.ok){if(r.status===401&&TOKEN)logout();throw new Error(d.error||'Something went wrong')}return d})})}
+function norm(x){x.id=x._id;return x}
+function load(){return api('/expenses').then(function(d){items=d.map(norm);render()})}
+function logout(){TOKEN=null;try{localStorage.removeItem('spendora-token')}catch(e){}items=[];render();$('auth').classList.add('open')}
+
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function shift(n){var p=month.split('-'),d=new Date(+p[0],+p[1]-1+n,1);month=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');render()}
+function render(){
+  var p=month.split('-');
+  $('mlabel').textContent=new Date(+p[0],+p[1]-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  var inM=items.filter(function(i){return i.date.slice(0,7)===month});
+  var sums={UPI:0,Cash:0,Card:0,Other:0},total=0;
+  inM.forEach(function(i){sums[i.mode]+=i.amt;total+=i.amt});
+  $('total').textContent=fmt.format(total);
+  $('bar').innerHTML=total?MODES.map(function(m){return '<i style="width:'+(sums[m]/total*100)+'%;background:'+COL[m]+'"></i>'}).join(''):'';
+  $('split').innerHTML=MODES.map(function(m){return '<div><span><i class="dot" style="background:'+COL[m]+'"></i>'+m+(total?' · '+Math.round(sums[m]/total*100)+'%':'')+'</span><b>'+fmt.format(sums[m])+'</b></div>'}).join('');
+  $('chips').innerHTML=['All'].concat(MODES).map(function(m){return '<button class="chip" data-f="'+m+'" aria-pressed="'+(filter===m)+'">'+m+'</button>'}).join('');
+  var shown=inM.filter(function(i){return filter==='All'||i.mode===filter}).sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:(a.id<b.id?1:-1)});
+  if(!shown.length){$('list').innerHTML='<div class="empty">No expenses here yet.<br>Tap “Add expense” to log your first one.</div>';return}
+  var html='',last='';
+  shown.forEach(function(i){
+    if(i.date!==last){last=i.date;var d=new Date(i.date+'T00:00:00');html+='<div class="day">'+d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})+'</div>'}
+    html+='<div class="item"><div class="badge" style="background:'+COL[i.mode]+'">'+i.mode+'</div><div class="t"><b>'+esc(i.what||i.note||i.cat)+'</b><span>'+esc(i.mode==='Other'&&i.other?i.other:i.mode)+'</span></div><div class="amt">'+fmt.format(i.amt)+'</div><button class="del" data-edit="'+i.id+'" aria-label="Edit expense">✎</button><button class="del'+(pendDel===String(i.id)?' sure':'')+'" data-id="'+i.id+'" aria-label="Delete expense">'+(pendDel===String(i.id)?'Delete?':'✕')+'</button></div>';
+  });
+  $('list').innerHTML=html;
+}
+function renderModes(){
+  $('f-modes').innerHTML=MODES.map(function(m){return '<button class="mode" data-m="'+m+'" aria-pressed="'+(mode===m)+'" style="'+(mode===m?'background:'+COL[m]:'')+'">'+m+'</button>'}).join('');
+  $('other-wrap').hidden=mode!=='Other';
+}
+function openSheet(id){
+  editId=id?String(id):null;var ex=editId?items.filter(function(i){return String(i.id)===editId})[0]:null;
+  $('f-amt').value='';$('f-what').value='';$('f-other').value='';$('err').textContent='';
+  var d=today();$('f-date').value=month===d.slice(0,7)?d:month+'-01';
+  if(ex){$('f-amt').value=ex.amt;$('f-what').value=ex.what||ex.note||ex.cat||'';$('f-other').value=ex.other||'';$('f-date').value=ex.date;mode=ex.mode}
+  $('sheet-title').textContent=ex?'Edit expense':'Add expense';$('save').textContent=ex?'Save changes':'Save expense';
+  renderModes();$('bg').classList.add('open');setTimeout(function(){$('f-amt').focus()},50);
+}
+function closeSheet(){$('bg').classList.remove('open')}
+$('prev').onclick=function(){shift(-1)};$('next').onclick=function(){shift(1)};
+$('add').onclick=function(){openSheet()};
+$('bg').onclick=function(e){if(e.target===$('bg'))closeSheet()};
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
+$('f-modes').onclick=function(e){var b=e.target.closest('.mode');if(b){mode=b.dataset.m;renderModes();if(mode==='Other')$('f-other').focus()}};
+$('chips').onclick=function(e){var b=e.target.closest('.chip');if(b){filter=b.dataset.f;render()}};
+$('list').onclick=function(e){var ed=e.target.closest('[data-edit]');if(ed){openSheet(ed.dataset.edit);return}var b=e.target.closest('[data-id]');if(!b)return;if(pendDel!==b.dataset.id){pendDel=b.dataset.id;clearTimeout(pendT);pendT=setTimeout(function(){pendDel=null;render()},3000);render();return}pendDel=null;clearTimeout(pendT);{var did=b.dataset.id;api('/expenses/'+did,{method:'DELETE'}).then(function(){items=items.filter(function(i){return String(i.id)!==did});render()}).catch(function(){})}};
+$('save').onclick=function(){
+  var amt=parseFloat($('f-amt').value),date=$('f-date').value;
+  if(!(amt>0)){$('err').textContent='Enter an amount greater than 0.';return}
+  var what=$('f-what').value.trim(),other=$('f-other').value.trim();
+  if(!what){$('err').textContent='Enter what you spent on.';return}
+  if(mode==='Other'&&!other){$('err').textContent='Enter the payment method you used.';return}
+  if(!date){$('err').textContent='Pick a date.';return}
+  var rec={amt:Math.round(amt*100)/100,mode:mode,other:mode==='Other'?other:'',what:what,date:date};
+  var old=editId?items.filter(function(i){return String(i.id)===editId})[0]:null;
+  var eid=old?old.id:null;
+  $('save').disabled=true;api(eid?'/expenses/'+eid:'/expenses',{method:eid?'PUT':'POST',body:JSON.stringify(rec)}).then(function(d){norm(d);if(eid)items[items.indexOf(old)]=d;else items.push(d);editId=null;month=date.slice(0,7);closeSheet();render()}).catch(function(e){$('err').textContent=e.message}).then(function(){$('save').disabled=false});
+};
+$('logout').onclick=logout;
+$('a-sw').onclick=function(){signup=!signup;$('a-namew').hidden=!signup;$('a-title').textContent=signup?'Create your account':'Sign in to Spendora';$('a-go').textContent=signup?'Create account':'Sign in';$('a-sw').textContent=signup?'Already have an account? Sign in':'New here? Create an account';$('a-err').textContent=''};
+$('a-go').onclick=function(){var p={email:$('a-email').value.trim(),password:$('a-pass').value};if(signup)p.name=$('a-name').value.trim();$('a-err').textContent='';$('a-go').disabled=true;
+  api('/auth/'+(signup?'register':'login'),{method:'POST',body:JSON.stringify(p)}).then(function(d){TOKEN=d.token;try{localStorage.setItem('spendora-token',TOKEN)}catch(e){}$('a-pass').value='';$('auth').classList.remove('open');return load()}).catch(function(e){$('a-err').textContent=e.message}).then(function(){$('a-go').disabled=false})};
+render();
+if(TOKEN){api('/auth/me').then(function(){$('auth').classList.remove('open');return load()}).catch(function(){$('auth').classList.add('open')})}
+})();
+</script>
+<script>if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});</script>
+</body>
+</html>
