@@ -30,9 +30,9 @@ Spendysis helps you see where your money goes each month. Log every expense with
 ## Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/home-light.png" width="260" alt="Home, light theme">
-  <img src="docs/screenshots/home-dark.png" width="260" alt="Home, dark theme">
-  <img src="docs/screenshots/pdf-report.png" width="260" alt="PDF report">
+  <img src="docs/screenshots/home-light.jpg" width="260" alt="Home, light theme">
+  <img src="docs/screenshots/home-dark.jpg" width="260" alt="Home, dark theme">
+  <img src="docs/screenshots/pdf-report.jpg" width="260" alt="PDF report">
 </p>
 
 
